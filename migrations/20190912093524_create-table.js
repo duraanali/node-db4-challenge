@@ -3,16 +3,12 @@ exports.up = function (knex) {
     return knex.schema
         .createTable('recipes', tbl => {
             tbl.increments();
-            tbl.string('recipe_name', 128)
-                .notNullable();
-
+            tbl.string('recipe_name', 128).notNullable();
         })
         // we can chain together createTable
         .createTable('ingredients', tbl => {
             tbl.increments();
-            tbl.string('ingredient_name', 128)
-                .notNullable();
-
+            tbl.string('ingredient_name', 128).notNullable();
         })
         .createTable('instructions', tbl => {
             tbl.increments();
@@ -35,7 +31,6 @@ exports.up = function (knex) {
                 .inTable('ingredients')
                 .onDelete('CASCADE') // if the PK record is deleted
                 .onUpdate('CASCADE'); // if the PK value updates
-
 
             // the combination of the two keys becomes our primary key
             // will enforce unique combinations of ids
