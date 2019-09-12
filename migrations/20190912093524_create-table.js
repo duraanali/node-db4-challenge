@@ -5,40 +5,37 @@ exports.up = function (knex) {
             tbl.increments();
             tbl.string('recipe_name', 128)
                 .notNullable();
-            tbl.integer('ingredient_id')
-                // forces integer to be positive
-                .unsigned()
-                .notNullable()
-                .references('id')
-                // this table must exist already
-                .inTable('ingredients')
+
         })
         // we can chain together createTable
         .createTable('ingredients', tbl => {
             tbl.increments();
-            tbl.string('ingredient_name', 128);
-            tbl.integer('recipe_id')
-                // forces integer to be positive
-                .unsigned()
-                .notNullable()
-                .references('id')
-                // this table must exist already
-                .inTable('recipes')
-        })
+            tbl.string('ingredient_name', 128)
+                .notNullable();
 
+        })
+        .createTable('instructions', tbl => {
+            tbl.increments();
+            tbl.string('instruction', 128);
+
+        })
         .createTable('recipes_ingredients', tbl => {
-            tbl.integer('recipe_id')
+            tbl
+                .integer('recipe_id')
                 .unsigned()
-                .notNullable()
                 .references('id')
-                // this table must exist already
                 .inTable('recipes')
-            tbl.integer('ingredient_id')
+                .onDelete('CASCADE') // if the PK record is deleted
+                .onUpdate('CASCADE'); // if the PK value updates
+
+            tbl
+                .integer('ingredient_id')
                 .unsigned()
-                .notNullable()
                 .references('id')
-                // this table must exist already
                 .inTable('ingredients')
+                .onDelete('CASCADE') // if the PK record is deleted
+                .onUpdate('CASCADE'); // if the PK value updates
+
 
             // the combination of the two keys becomes our primary key
             // will enforce unique combinations of ids
@@ -49,6 +46,7 @@ exports.up = function (knex) {
 exports.down = function (knex) {
     // drop in the opposite order
     return knex.schema
+        .dropTableIfExists('instructions')
         .dropTableIfExists('recipes_ingredients')
         .dropTableIfExists('ingredients')
         .dropTableIfExists('recipes')
